@@ -1,0 +1,40 @@
+openapi: 3.0.1
+info:
+  title: Markdown to HTML converter API
+  description: Convert a markdown document to the HTML one
+  version: 1.0.0
+servers:
+  - url: http://localhost:7071/api
+paths:
+  /convert/md/to/html:
+    post:
+      tags:
+        - md2html
+      summary: Convert Markdown to HTML
+      description: Convert Markdown to HTML
+      operationId: ConvertMDtoHTML
+      requestBody:
+        description: Markdown contents
+        content:
+          text/plain:
+            schema:
+              type: string
+        required: true
+      responses:
+        '200':
+          description: HTML contents
+          content:
+            text/plain:
+              schema:
+                type: string
+          x-ms-summary: HTML contents converted from Markdown
+      security:
+        - function_key: [ ]
+      x-ms-visibility: important
+components:
+  securitySchemes:
+    function_key:
+      type: apiKey
+      description: API Key through the request header
+      name: x-functions-key
+      in: header

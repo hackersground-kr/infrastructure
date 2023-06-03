@@ -1,0 +1,71 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "MD2HTML",
+        "version": "1.0",
+        "description": "Convert a markdown document to the HTML one"
+    },
+    "host": "{{APIM_NAME}}.azure-api.net",
+    "basePath": "/md2html",
+    "schemes": [
+        "https"
+    ],
+    "securityDefinitions": {
+        "apiKeyHeader": {
+            "type": "apiKey",
+            "name": "Ocp-Apim-Subscription-Key",
+            "in": "header"
+        },
+        "apiKeyQuery": {
+            "type": "apiKey",
+            "name": "subscription-key",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ],
+    "paths": {
+        "/convert/md/to/html": {
+            "post": {
+                "description": "Convert Markdown to HTML",
+                "operationId": "ConvertMDtoHTML",
+                "summary": "Convert Markdown to HTML",
+                "tags": [
+                    "md2html"
+                ],
+                "parameters": [
+                    {
+                        "name": "convertMdToHtmlPostRequest",
+                        "in": "body",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "description": "Markdown contents"
+                    }
+                ],
+                "consumes": [
+                    "text/plain"
+                ],
+                "produces": [
+                    "text/plain"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "HTML contents",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {},
+    "tags": []
+}
