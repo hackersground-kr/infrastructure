@@ -191,7 +191,7 @@ resource apimapi 'Microsoft.ApiManagement/service/apis@2022-08-01' = {
     type: apiManagement.type
     displayName: apiManagement.api.displayName
     description: apiManagement.api.description
-    serviceUrl: format(apiManagement.api.serviceUrl, locationCode)
+    serviceUrl: apiManagement.api.serviceUrl
     path: apiManagement.api.path
     subscriptionRequired: apiManagement.api.subscriptionRequired
     format: apiManagement.api.format

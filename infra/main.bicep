@@ -125,6 +125,68 @@ var apps = [
       }
     }
   }
+  {
+    name: 'SMS'
+    suffix: 'sms'
+    apim: {
+      nv: {
+        name: 'X_FUNCTIONS_KEY_SMS'
+        displayName: 'X_FUNCTIONS_KEY_SMS'
+        value: 'to_be_updated'
+      }
+      api: {
+        name: 'SMS'
+        path: 'sms'
+        subscriptionRequired: true
+        format: 'openapi-link'
+        value: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-api-openapi-sms.yaml'
+        policy: {
+          format: 'xml-link'
+          value: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-policy-api-sms.xml'
+        }
+        operations: [
+          // {
+          //   name: ''
+          //   policy: {
+          //     format: ''
+          //     value: ''
+          //   }
+          // }
+        ]
+      }
+    }
+  }
+  {
+    name: 'MMS'
+    suffix: 'mms'
+    apim: {
+      nv: {
+        name: 'X_FUNCTIONS_KEY_MMS'
+        displayName: 'X_FUNCTIONS_KEY_MMS'
+        value: 'to_be_updated'
+      }
+      api: {
+        name: 'MMS'
+        path: 'mms'
+        subscriptionRequired: true
+        format: 'openapi-link'
+        value: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-api-openapi-mms.yaml'
+        policy: {
+          format: 'xml-link'
+          value: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-policy-api-mms.xml'
+        }
+        operations: [
+          // {
+          //   name: ''
+          //   policy: {
+          //     format: ''
+          //     value: ''
+          //   }
+          // }
+        ]
+      }
+    }
+  }
 ]
 
 module apim './provision-apiManagement.bicep' = {
@@ -172,7 +234,7 @@ module apis './provision-apiManagementApi.bicep' = [for (app, i) in apps: {
     apiMgmtApiName: app.apim.api.name
     apiMgmtApiDisplayName: app.apim.api.name
     apiMgmtApiDescription: app.apim.api.name
-    apiMgmtApiServiceUrl: 'https://fncapp-${name}-${app.suffix}-${env}-{0}.azurewebsites.net/api'
+    apiMgmtApiServiceUrl: 'https://fncapp-${name}-${app.suffix}-${env}-${locationCode}.azurewebsites.net/api'
     apiMgmtApiPath: app.apim.api.path
     apiMgmtApiSubscriptionRequired: app.apim.api.subscriptionRequired
     apiMgmtApiFormat: app.apim.api.format
