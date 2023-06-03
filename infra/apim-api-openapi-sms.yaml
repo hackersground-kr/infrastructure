@@ -1,0 +1,15 @@
+openapi: 3.0.1
+info:
+  title: NHN Cloud - SMS API
+  description: Send SMS through NHN Cloud SMS API
+  version: 1.0.0
+servers:
+  - url: http://localhost:7071/api
+paths: {}
+components:
+  securitySchemes:
+    function_key:
+      type: apiKey
+      description: API Key through the request header
+      name: x-functions-key
+      in: header
