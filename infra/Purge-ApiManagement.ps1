@@ -33,53 +33,100 @@ if ($needHelp -eq $true) {
     Exit 0
 }
 
-$account = $(az account show | ConvertFrom-Json)
+# List soft-deleted API Management instances
+function List-DeletedAPIMs {
+    param (
+        [string] $ApiVersion
+    )
 
-$url = "https://management.azure.com/subscriptions/$($account.id)/providers/Microsoft.ApiManagement/deletedservices?api-version=$($ApiVersion)"
+    $account = $(az account show | ConvertFrom-Json)
 
-# Uncomment to debug
-# $url
+    $url = "https://management.azure.com/subscriptions/$($account.id)/providers/Microsoft.ApiManagement/deletedservices?api-version=$($ApiVersion)"
+    
+    # Uncomment to debug
+    # $url
 
-$apims = $(az rest -m get -u $url --query "value" | ConvertFrom-Json)
-if ($apims -eq $null) {
-    Write-Output "No soft-deleted API Management instance found to purge"
-    Exit 0
+    $options = ""
+
+    $apims = $(az rest -m get -u $url --query "value" | ConvertFrom-Json)
+    if ($apims -eq $null) {
+        $options = "All soft-deleted API Management instances purged or no such instance found to purge"
+        $returnValue = @{ apims = $apims; options = $options }
+        return $returnValue
+    }
+    
+    if ($apims.Count -eq 1) {
+        $name = $apims.name
+        $options += "    1: $name `n"
+    } else {
+        $apims | ForEach-Object {
+            $i = $apims.IndexOf($_)
+            $name = $_.name
+            $options += "    $($i +1): $name `n"
+        }
+    }
+    $options += "    q: Quit`n"
+
+    $returnValue = @{ apims = $apims; options = $options }
+    return $returnValue
 }
 
-$options = ""
-if ($apims.Count -eq 1) {
-    $name = $apims.name
-    $options += "    1: $name `n"
-} else {
-    $apims | ForEach-Object {
-        $i = $apims.IndexOf($_)
-        $name = $_.name
-        $options += "    $($i +1): $name `n"
+# Purge soft-deleted API Management instances
+function Purge-DeletedAPIMs {
+    param (
+        [string] $ApiVersion
+    )
+
+    $continue = $true
+    $result = List-DeletedAPIMs -ApiVersion $ApiVersion
+    if ($result.apims -eq $null) {
+        $continue = $false
+    }
+
+    while ($continue -eq $true) {
+        $options = $result.options
+
+        $input = Read-Host "Select the number to purge the soft-deleted API Management instance or 'q' to quit: `n`n$options"
+        if ($input -eq "q") {
+            $continue = $false
+            break
+        }
+
+        $parsed = $input -as [int]
+        if ($parsed -eq $null) {
+            Write-Output "Invalid input"
+            $continue = $false
+            break
+        }
+
+        $apims = $result.apims
+        if ($parsed -gt $apims.Count) {
+            Write-Output "Invalid input"
+            $continue = $false
+            break
+        }
+
+        $index = $parsed - 1
+        
+        $url = "https://management.azure.com$($apims[$index].id)?api-version=$($ApiVersion)"
+        
+        # Uncomment to debug
+        # $url
+        
+        $apim = $(az rest -m get -u $url)
+        if ($apim -ne $null) {
+            $deleted = $(az rest -m delete -u $url)
+        }
+
+        $result = List-DeletedAPIMs -ApiVersion $ApiVersion
+        if ($result.apims -eq $null) {
+            $continue = $false
+        }
+    }
+
+    if ($continue -eq $false) {
+        return $result.options
     }
 }
-$options += "    q: Quit`n"
 
-$input = Read-Host "Select the number to purge the soft-deleted API Management instance or 'q' to quit: `n`n$options"
-if ($input -eq "q") {
-    Exit 0
-}
-$parsed = $input -as [int]
-if ($parsed -eq $null) {
-    Write-Output "Invalid input"
-    Exit 0
-}
-if ($parsed -gt $apims.Count) {
-    Write-Output "Invalid input"
-    Exit 0
-}
-$index = $parsed - 1
-
-$url = "https://management.azure.com$($apims[$index].id)?api-version=$($ApiVersion)"
-
-# Uncomment to debug
-# $url
-
-$apim = $(az rest -m get -u $url)
-if ($apim -ne $null) {
-    $deleted = $(az rest -m delete -u $url)
-}
+Purge-DeletedAPIMs -ApiVersion $ApiVersion

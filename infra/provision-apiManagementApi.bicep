@@ -1,4 +1,5 @@
 param name string
+param suffix string = ''
 param location string = resourceGroup().location
 param env string = 'dev'
 
@@ -54,7 +55,7 @@ param apiMgmtApiOperations array = [
 param apiMgmtProductName string = 'default'
 
 module apimapi './apiManagementApi.bicep' = {
-  name: 'ApiManagementApi'
+  name: 'ApiManagementApi_ApiManagementApi_${suffix}'
   params: {
     name: name
     location: location

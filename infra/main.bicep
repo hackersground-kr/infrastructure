@@ -218,7 +218,7 @@ module fncapps './provision-functionApp.bicep' = [for (app, i) in apps: {
 }]
 
 module apis './provision-apiManagementApi.bicep' = [for (app, i) in apps: {
-  name: 'ApiManagementApi_${app.suffix}'
+  name: 'Provision_ApiManagementApi_${app.suffix}'
   scope: rg
   dependsOn: [
     apim
@@ -227,6 +227,7 @@ module apis './provision-apiManagementApi.bicep' = [for (app, i) in apps: {
   params: {
     name: name
     location: location
+    suffix: app.suffix
     env: env
     apiMgmtNVName: app.apim.nv.name
     apiMgmtNVDisplayName: app.apim.nv.displayName
