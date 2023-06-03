@@ -1,0 +1,22 @@
+name: Azure Deployment
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy apps to Azure
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Deploy MD2HTML
+      shell: bash
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh workflow run "Azure Deployment" --repo hackersground-kr/markdown-to-html

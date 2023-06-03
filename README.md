@@ -51,5 +51,5 @@
     azd pipeline config
 
     gh auth login
-    gh workflow run "Azure Dev" --repo $GITHUB_USERNAME/infrastructure
+    gh workflow run "Azure Deployment" --repo $GITHUB_USERNAME/infrastructure
     ```
