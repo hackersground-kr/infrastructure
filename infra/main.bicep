@@ -107,52 +107,24 @@ var apps = [
         name: 'MD2HTML'
         path: 'md2html'
         subscriptionRequired: true
-        format: 'openapi-link'
-        value: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-api-openapi-md2html.yaml'
-        policy: {
-          format: 'xml-link'
-          value: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-policy-api-md2html.xml'
-        }
-        operations: [
-          // {
-          //   name: ''
-          //   policy: {
-          //     format: ''
-          //     value: ''
-          //   }
-          // }
-        ]
+        operations: []
       }
     }
   }
   {
-    name: 'SMS'
-    suffix: 'sms'
+    name: 'SENDERS'
+    suffix: 'senders'
     apim: {
       nv: {
-        name: 'X_FUNCTIONS_KEY_SMS'
-        displayName: 'X_FUNCTIONS_KEY_SMS'
+        name: 'X_FUNCTIONS_KEY_SENDERS'
+        displayName: 'X_FUNCTIONS_KEY_SENDERS'
         value: 'to_be_updated'
       }
       api: {
-        name: 'SMS'
-        path: 'sms'
+        name: 'SENDERS'
+        path: 'senders'
         subscriptionRequired: true
-        format: 'openapi-link'
-        value: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-api-openapi-sms.yaml'
-        policy: {
-          format: 'xml-link'
-          value: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-policy-api-sms.xml'
-        }
-        operations: [
-          // {
-          //   name: ''
-          //   policy: {
-          //     format: ''
-          //     value: ''
-          //   }
-          // }
-        ]
+        operations: []
       }
     }
   }
@@ -169,21 +141,7 @@ var apps = [
         name: 'MMS'
         path: 'mms'
         subscriptionRequired: true
-        format: 'openapi-link'
-        value: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-api-openapi-mms.yaml'
-        policy: {
-          format: 'xml-link'
-          value: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-policy-api-mms.xml'
-        }
-        operations: [
-          // {
-          //   name: ''
-          //   policy: {
-          //     format: ''
-          //     value: ''
-          //   }
-          // }
-        ]
+        operations: []
       }
     }
   }
@@ -238,10 +196,10 @@ module apis './provision-apiManagementApi.bicep' = [for (app, i) in apps: {
     apiMgmtApiServiceUrl: 'https://fncapp-${name}-${app.suffix}-${env}-${locationCode}.azurewebsites.net/api'
     apiMgmtApiPath: app.apim.api.path
     apiMgmtApiSubscriptionRequired: app.apim.api.subscriptionRequired
-    apiMgmtApiFormat: app.apim.api.format
-    apiMgmtApiValue: app.apim.api.value
-    apiMgmtApiPolicyFormat: app.apim.api.policy.format
-    apiMgmtApiPolicyValue: app.apim.api.policy.value
+    apiMgmtApiFormat: 'openapi-link'
+    apiMgmtApiValue: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-api-openapi-${app.apim.api.path}.yaml'
+    apiMgmtApiPolicyFormat: 'xml-link'
+    apiMgmtApiPolicyValue: 'https://raw.githubusercontent.com/hackersground-kr/infrastructure/main/infra/apim-policy-api-${app.apim.api.path}.xml'
     apiMgmtApiOperations: app.apim.api.operations
   }
 }]

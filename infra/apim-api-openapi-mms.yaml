@@ -1,15 +1,174 @@
 openapi: 3.0.1
 info:
-  title: NHN Cloud - MMS API
-  description: Send MMS through NHN Cloud MMS API
-  version: 1.0.0
+  title: NHN Cloud MMS API Facade
+  description: This is a facade API for sending MMS messages through the NHN Cloud Notification service.
+  version: v1.0.0
 servers:
   - url: http://localhost:7071/api
-paths: {}
+paths:
+  /messages:
+    post:
+      tags:
+        - sms
+      operationId: SMS.Send
+      requestBody:
+        description: Message payload to send
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/sendMessagesRequestBody'
+            examples:
+              sample:
+                summary: This represents the example entity for SendMessages request body.
+                value: '{"templateId":"TemplateId","title":"Title","body":"Body","sendNo":"15446859","requestDate":"2018-08-10 10:00","senderGroupingKey":"SenderGroupingKey","recipientList":[{"recipientNo":"01000000000","countryCode":"82","internationalRecipientNo":"821000000000","templateParameter":{"key":"value"},"recipientGroupingKey":"recipientGroupingKey"}],"userId":"UserId","statsId":"statsId","originCode":"123456789"}'
+      responses:
+        '200':
+          description: The OK response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/sendMessagesResponseBody'
+              examples:
+                sample:
+                  summary: This represents the example entity for SendMessages response body.
+                  value: '{"header":{"isSuccessful":true,"resultCode":0,"resultMessage":"SUCCESS"},"body":{"data":{"requestId":"201808100000000000000000","statusCode":"2","senderGroupingKey":"SenderGroupingKey","sendResultList":[{"recipientNo":"01000000000","resultCode":0,"resultMessage":"SUCCESS","recipientSeq":1,"recipientGroupingKey":"RecipientGroupingKey"}]}}}'
+        '400':
+          description: The input was invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponseModel'
+              examples:
+                sample:
+                  summary: This represents the example entity for the Bad Request response body.
+                  value: '{"message":"Invalid request."}'
+        '500':
+          description: The service has got an unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/errorResponseModel'
+              examples:
+                sample:
+                  summary: This represents the example entity for the Internal Server Error response body.
+                  value: '{"message":"Something has gone wrong."}'
+      security:
+        - function_key: [ ]
+        - app_auth: [ ]
 components:
+  schemas:
+    errorResponseModel:
+      type: object
+      properties:
+        message:
+          type: string
+    responseHeaderModel:
+      type: object
+      properties:
+        isSuccessful:
+          type: boolean
+        resultCode:
+          type: integer
+          format: int32
+        resultMessage:
+          type: string
+    responseItemBodyModel_sendMessagesResponseData:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/sendMessagesResponseData'
+    sendMessagesRequestBody:
+      type: object
+      properties:
+        templateId:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        sendNo:
+          type: string
+          nullable: true
+        requestDate:
+          type: string
+        senderGroupingKey:
+          type: string
+        recipientList:
+          type: array
+          items:
+            $ref: '#/components/schemas/sendMessagesRequestRecipient'
+          nullable: true
+        userId:
+          type: string
+        statsId:
+          type: string
+        originCode:
+          type: string
+    sendMessagesRequestRecipient:
+      type: object
+      properties:
+        recipientNo:
+          type: string
+          nullable: true
+        countryCode:
+          type: string
+        internationalRecipientNo:
+          type: string
+          nullable: true
+        templateParameter:
+          type: object
+          additionalProperties:
+            type: object
+          nullable: true
+        recipientGroupingKey:
+          type: string
+    sendMessagesResponseBody:
+      type: object
+      properties:
+        header:
+          $ref: '#/components/schemas/responseHeaderModel'
+        body:
+          $ref: '#/components/schemas/responseItemBodyModel_sendMessagesResponseData'
+    sendMessagesResponseData:
+      type: object
+      properties:
+        requestId:
+          type: string
+        statusCode:
+          type: string
+        senderGroupingKey:
+          type: string
+          nullable: true
+        sendResultList:
+          type: array
+          items:
+            $ref: '#/components/schemas/sendMessagesResponseResult'
+          nullable: true
+    sendMessagesResponseResult:
+      type: object
+      properties:
+        recipientNo:
+          type: string
+          nullable: true
+        resultCode:
+          type: integer
+          format: int32
+        resultMessage:
+          type: string
+        recipientSeq:
+          type: integer
+          format: int32
+          nullable: true
+        recipientGroupingKey:
+          type: string
+          nullable: true
   securitySchemes:
     function_key:
       type: apiKey
-      description: API Key through the request header
+      description: API Key
       name: x-functions-key
       in: header
+    app_auth:
+      type: http
+      description: Toast API basic auth
+      scheme: basic
