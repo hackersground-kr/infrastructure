@@ -124,6 +124,9 @@ module wrkspc './logAnalyticsWorkspace.bicep' = {
 
 module appins './appInsights.bicep' = {
   name: 'ApplicationInsights_FunctionApp_${suffix}'
+  dependsOn: [
+    wrkspc
+  ]
   params: {
     name: name
     suffix: suffix
@@ -148,6 +151,12 @@ module csplan './consumptionPlan.bicep' = {
 
 module fncapp './functionApp.bicep' = {
   name: 'FunctionApp_FunctionApp_${suffix}'
+  dependsOn: [
+    st
+    wrkspc
+    appins
+    csplan
+  ]
   params: {
     name: name
     suffix: suffix
