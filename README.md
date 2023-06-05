@@ -20,14 +20,14 @@
 1. 아래 순서대로 명령어를 실행시켜 전체 인프라를 구성합니다.
 
     ```powershell
-    # On Windows
+    # On PowerShell
     $AZURE_ENV_NAME = "{{애저 리소스 이름}}"
     $AZURE_ENV_INFRA = "{{애저 배포 환경: dev|test|prod}}"
     $AZURE_LOCATION_CODE = "{{애저 리소스 위치 코드: krc}}"
     ```
 
     ```bash
-    # On MacOS/Linux
+    # On Bash/Zsh
     AZURE_ENV_NAME="{{애저 리소스 이름}}"
     AZURE_ENV_INFRA="{{애저 배포 환경: dev|test|prod}}"
     AZURE_LOCATION_CODE="{{애저 리소스 위치 코드: krc}}"
@@ -65,27 +65,29 @@
 파워 플랫폼에서 커스텀 커넥터를 생성해서 사용할 경우 API 구독 키가 필요합니다. 아래 명령어를 통해 구독 키를 받아서 사용하세요.
 
 ```powershell
-# PowerShell
+# On PowerShell
 az login
 
 $AZURE_RESOURCE_GROUP = "rg-$AZURE_ENV_NAME-$AZURE_ENV_INFRA-$AZURE_LOCATION_CODE"
 $AZURE_APIM_NAME = "apim-$AZURE_ENV_NAME-$AZURE_ENV_INFRA-$AZURE_LOCATION_CODE"
+
 $SUBSCRIPTION_NAME = "{{애저 구독 이름}}"
 $SUBSCRIPTION_ID = $(az account list --query "[?name == '$SUBSCRIPTION_NAME'].id" -o tsv)
 $API_VERSION = "2022-08-01"
 $REQUEST_URL = "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP/providers/Microsoft.ApiManagement/service/$AZURE_APIM_NAME/subscriptions/default/listSecrets?api-version=$API_VERSION"
 
-$SUBSCRIPTION_KEY=$(az rest -m post --url $REQUEST_URL --query "primaryKey" -o tsv)
+$SUBSCRIPTION_KEY = $(az rest -m post --url $REQUEST_URL --query "primaryKey" -o tsv)
 
 $SUBSCRIPTION_KEY
 ```
 
 ```bash
-# Bash/Zsh
+# On Bash/Zsh
 az login
 
 AZURE_RESOURCE_GROUP="rg-$AZURE_ENV_NAME-$AZURE_ENV_INFRA-$AZURE_LOCATION_CODE"
 AZURE_APIM_NAME="apim-$AZURE_ENV_NAME-$AZURE_ENV_INFRA-$AZURE_LOCATION_CODE"
+
 SUBSCRIPTION_NAME="{{애저 구독 이름}}"
 SUBSCRIPTION_ID=$(az account list --query "[?name == '$SUBSCRIPTION_NAME'].id" -o tsv)
 API_VERSION="2022-08-01"
