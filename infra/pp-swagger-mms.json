@@ -1,0 +1,238 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "MMS",
+        "version": "1.0",
+        "description": "This is a facade API for sending MMS messages through the NHN Cloud Notification service."
+    },
+    "host": "{{APIM_NAME}}.azure-api.net",
+    "basePath": "/mms",
+    "schemes": [
+        "https"
+    ],
+    "securityDefinitions": {
+        "apiKeyHeader": {
+            "type": "apiKey",
+            "name": "Ocp-Apim-Subscription-Key",
+            "in": "header"
+        },
+        "apiKeyQuery": {
+            "type": "apiKey",
+            "name": "subscription-key",
+            "in": "query"
+        }
+    },
+    "security": [
+        {
+            "apiKeyHeader": []
+        },
+        {
+            "apiKeyQuery": []
+        }
+    ],
+    "paths": {
+        "/messages": {
+            "post": {
+                "operationId": "MMS-Send",
+                "summary": "MMS.Send",
+                "tags": [
+                    "mms"
+                ],
+                "parameters": [
+                    {
+                        "name": "sendMessagesRequestBody",
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#/definitions/sendMessagesRequestBody"
+                        },
+                        "description": "Message payload to send"
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "The OK response",
+                        "schema": {
+                            "$ref": "#/definitions/sendMessagesResponseBody"
+                        },
+                        "examples": {
+                            "application/json": "{\"header\":{\"isSuccessful\":true,\"resultCode\":0,\"resultMessage\":\"SUCCESS\"},\"body\":{\"data\":{\"requestId\":\"201808100000000000000000\",\"statusCode\":\"2\",\"senderGroupingKey\":\"SenderGroupingKey\",\"sendResultList\":[{\"recipientNo\":\"01000000000\",\"resultCode\":0,\"resultMessage\":\"SUCCESS\",\"recipientSeq\":1,\"recipientGroupingKey\":\"RecipientGroupingKey\"}]}}}"
+                        }
+                    },
+                    "400": {
+                        "description": "The input was invalid",
+                        "schema": {
+                            "$ref": "#/definitions/errorResponseModel"
+                        },
+                        "examples": {
+                            "application/json": "{\"message\":\"Invalid request.\"}"
+                        }
+                    },
+                    "500": {
+                        "description": "The service has got an unexpected error",
+                        "schema": {
+                            "$ref": "#/definitions/errorResponseModel"
+                        },
+                        "examples": {
+                            "application/json": "{\"message\":\"Something has gone wrong.\"}"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "errorResponseModel": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "responseHeaderModel": {
+            "type": "object",
+            "properties": {
+                "isSuccessful": {
+                    "type": "boolean"
+                },
+                "resultCode": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "resultMessage": {
+                    "type": "string"
+                }
+            }
+        },
+        "responseItemBodyModel_sendMessagesResponseData": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "$ref": "#/definitions/sendMessagesResponseData"
+                }
+            }
+        },
+        "sendMessagesRequestBody": {
+            "type": "object",
+            "properties": {
+                "templateId": {
+                    "type": "string"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "sendNo": {
+                    "type": "string"
+                },
+                "requestDate": {
+                    "type": "string"
+                },
+                "senderGroupingKey": {
+                    "type": "string"
+                },
+                "recipientList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/sendMessagesRequestRecipient"
+                    }
+                },
+                "userId": {
+                    "type": "string"
+                },
+                "statsId": {
+                    "type": "string"
+                },
+                "originCode": {
+                    "type": "string"
+                }
+            },
+            "example": "{\"templateId\":\"TemplateId\",\"title\":\"Title\",\"body\":\"Body\",\"sendNo\":\"15446859\",\"requestDate\":\"2018-08-10 10:00\",\"senderGroupingKey\":\"SenderGroupingKey\",\"recipientList\":[{\"recipientNo\":\"01000000000\",\"countryCode\":\"82\",\"internationalRecipientNo\":\"821000000000\",\"templateParameter\":{\"key\":\"value\"},\"recipientGroupingKey\":\"recipientGroupingKey\"}],\"userId\":\"UserId\",\"statsId\":\"statsId\",\"originCode\":\"123456789\"}"
+        },
+        "sendMessagesRequestRecipient": {
+            "type": "object",
+            "properties": {
+                "recipientNo": {
+                    "type": "string"
+                },
+                "countryCode": {
+                    "type": "string"
+                },
+                "internationalRecipientNo": {
+                    "type": "string"
+                },
+                "templateParameter": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object"
+                    }
+                },
+                "recipientGroupingKey": {
+                    "type": "string"
+                }
+            }
+        },
+        "sendMessagesResponseBody": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "$ref": "#/definitions/responseHeaderModel"
+                },
+                "body": {
+                    "$ref": "#/definitions/responseItemBodyModel_sendMessagesResponseData"
+                }
+            }
+        },
+        "sendMessagesResponseData": {
+            "type": "object",
+            "properties": {
+                "requestId": {
+                    "type": "string"
+                },
+                "statusCode": {
+                    "type": "string"
+                },
+                "senderGroupingKey": {
+                    "type": "string"
+                },
+                "sendResultList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/sendMessagesResponseResult"
+                    }
+                }
+            }
+        },
+        "sendMessagesResponseResult": {
+            "type": "object",
+            "properties": {
+                "recipientNo": {
+                    "type": "string"
+                },
+                "resultCode": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "resultMessage": {
+                    "type": "string"
+                },
+                "recipientSeq": {
+                    "format": "int32",
+                    "type": "integer"
+                },
+                "recipientGroupingKey": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "tags": []
+}
