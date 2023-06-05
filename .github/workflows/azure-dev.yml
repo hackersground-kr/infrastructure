@@ -10,9 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Deploy MD2HTML
+    - name: Deploy MD2HTML API
       shell: bash
       env:
         GITHUB_TOKEN: ${{ secrets.GH_PAT }}
       run: |
         gh workflow run "Azure Deployment" --repo hackersground-kr/markdown-to-html
+
+    - name: Deploy NHN SMS APIs
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+      run: |
+        gh workflow run "Azure Deployment" --repo hackersground-kr/nhn-toast-notification-service-custom-connector

@@ -2,11 +2,13 @@ param name string
 param location string = resourceGroup().location
 param env string = 'dev'
 
-param apiMgmtNVName string
-param apiMgmtNVDisplayName string
-
-@secure()
-param apiMgmtNVValue string
+param apiMgmtNV array = [
+  {
+    name: ''
+    displayName: ''
+    value: ''
+  }
+]
 
 @allowed([
   'http'
@@ -146,11 +148,7 @@ var apiManagement = {
   name: format(metadata.longName, 'apim')
   location: location
   type: apiMgmtApiType
-  nv: {
-    name: apiMgmtNVName
-    displayName: apiMgmtNVDisplayName
-    value: apiMgmtNVValue
-  }
+  nv: apiMgmtNV
   api: {
     name: apiMgmtApiName
     displayName: apiMgmtApiDisplayName
@@ -176,14 +174,14 @@ resource apim 'Microsoft.ApiManagement/service@2022-08-01' existing = {
   scope: resourceGroup(apiManagement.groupName)
 }
 
-resource apimNamedValue 'Microsoft.ApiManagement/service/namedValues@2022-08-01' = {
-  name: '${apim.name}/${apiManagement.nv.name}'
+resource apimNamedValue 'Microsoft.ApiManagement/service/namedValues@2022-08-01' = [for nv in apiManagement.nv: {
+  name: '${apim.name}/${nv.name}'
   properties: {
-    displayName: apiManagement.nv.displayName
+    displayName: nv.displayName
     secret: true
-    value: apiManagement.nv.value
+    value: nv.value
   }
-}
+}]
 
 resource apimapi 'Microsoft.ApiManagement/service/apis@2022-08-01' = {
   name: '${apim.name}/${apiManagement.api.name}'

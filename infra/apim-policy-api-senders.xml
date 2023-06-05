@@ -16,6 +16,7 @@
     <set-header name="x-functions-key" exists-action="override">
       <value>{{X_FUNCTIONS_KEY_SENDERS}}</value>
     </set-header>
+    <authentication-basic username="{{X_TOAST_APP_KEY}}" password="{{X_TOAST_APP_SECRET}}" />
   </inbound>
   <backend>
     <base />

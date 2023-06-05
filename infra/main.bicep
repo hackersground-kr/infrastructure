@@ -98,11 +98,13 @@ var apps = [
     name: 'MD2HTML'
     suffix: 'md2html'
     apim: {
-      nv: {
-        name: 'X_FUNCTIONS_KEY_MD2HTML'
-        displayName: 'X_FUNCTIONS_KEY_MD2HTML'
-        value: 'to_be_updated'
-      }
+      nv: [
+        {
+          name: 'X_FUNCTIONS_KEY_MD2HTML'
+          displayName: 'X_FUNCTIONS_KEY_MD2HTML'
+          value: 'to_be_updated'
+        }
+      ]
       api: {
         name: 'MD2HTML'
         path: 'md2html'
@@ -115,11 +117,23 @@ var apps = [
     name: 'SENDERS'
     suffix: 'senders'
     apim: {
-      nv: {
-        name: 'X_FUNCTIONS_KEY_SENDERS'
-        displayName: 'X_FUNCTIONS_KEY_SENDERS'
-        value: 'to_be_updated'
-      }
+      nv: [
+        {
+          name: 'X_FUNCTIONS_KEY_SENDERS'
+          displayName: 'X_FUNCTIONS_KEY_SENDERS'
+          value: 'to_be_updated'
+        }
+        {
+          name: 'X_TOAST_APP_KEY'
+          displayName: 'X_TOAST_APP_KEY'
+          value: 'to_be_updated'
+        }
+        {
+          name: 'X_TOAST_APP_SECRET'
+          displayName: 'X_TOAST_APP_SECRET'
+          value: 'to_be_updated'
+        }
+      ]
       api: {
         name: 'SENDERS'
         path: 'senders'
@@ -132,11 +146,23 @@ var apps = [
     name: 'MMS'
     suffix: 'mms'
     apim: {
-      nv: {
-        name: 'X_FUNCTIONS_KEY_MMS'
-        displayName: 'X_FUNCTIONS_KEY_MMS'
-        value: 'to_be_updated'
-      }
+      nv: [
+        {
+          name: 'X_FUNCTIONS_KEY_MMS'
+          displayName: 'X_FUNCTIONS_KEY_MMS'
+          value: 'to_be_updated'
+        }
+        {
+          name: 'X_TOAST_APP_KEY'
+          displayName: 'X_TOAST_APP_KEY'
+          value: 'to_be_updated'
+        }
+        {
+          name: 'X_TOAST_APP_SECRET'
+          displayName: 'X_TOAST_APP_SECRET'
+          value: 'to_be_updated'
+        }
+      ]
       api: {
         name: 'MMS'
         path: 'mms'
@@ -187,9 +213,7 @@ module apis './provision-apiManagementApi.bicep' = [for (app, i) in apps: {
     location: location
     suffix: app.suffix
     env: env
-    apiMgmtNVName: app.apim.nv.name
-    apiMgmtNVDisplayName: app.apim.nv.displayName
-    apiMgmtNVValue: app.apim.nv.value
+    apiMgmtNV: app.apim.nv
     apiMgmtApiName: app.apim.api.name
     apiMgmtApiDisplayName: app.apim.api.name
     apiMgmtApiDescription: app.apim.api.name

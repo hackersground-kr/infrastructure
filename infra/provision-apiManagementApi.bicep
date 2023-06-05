@@ -3,10 +3,13 @@ param suffix string = ''
 param location string = resourceGroup().location
 param env string = 'dev'
 
-param apiMgmtNVName string
-param apiMgmtNVDisplayName string
-@secure()
-param apiMgmtNVValue string
+param apiMgmtNV array = [
+  {
+  name: ''
+  displayName: ''
+  value: ''
+  }
+]
 @allowed([
   'http'
   'soap'
@@ -60,9 +63,7 @@ module apimapi './apiManagementApi.bicep' = {
     name: name
     location: location
     env: env
-    apiMgmtNVName: apiMgmtNVName
-    apiMgmtNVDisplayName: apiMgmtNVDisplayName
-    apiMgmtNVValue: apiMgmtNVValue
+    apiMgngNV: apiMgmtNV
     apiMgmtApiType: apiMgmtApiType
     apiMgmtApiName: apiMgmtApiName
     apiMgmtApiDisplayName: apiMgmtApiDisplayName
