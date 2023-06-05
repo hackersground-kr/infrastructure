@@ -63,7 +63,7 @@ module apimapi './apiManagementApi.bicep' = {
     name: name
     location: location
     env: env
-    apiMgngNV: apiMgmtNV
+    apiMgmtNV: apiMgmtNV
     apiMgmtApiType: apiMgmtApiType
     apiMgmtApiName: apiMgmtApiName
     apiMgmtApiDisplayName: apiMgmtApiDisplayName
