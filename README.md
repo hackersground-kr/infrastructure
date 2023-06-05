@@ -65,25 +65,33 @@
 파워 플랫폼에서 커스텀 커넥터를 생성해서 사용할 경우 API 구독 키가 필요합니다. 아래 명령어를 통해 구독 키를 받아서 사용하세요.
 
 ```powershell
-$SUBSCRIPTION_NAME = "{{애저 구독 이름}}"
-$SUBSCRIPTION_ID = $(az account list --query "[?name == '$SUBSCRIPTION_NAME'].id" -o tsv)
+# PowerShell
+az login
+
 $AZURE_RESOURCE_GROUP = "rg-$AZURE_ENV_NAME-$AZURE_ENV_INFRA-$AZURE_LOCATION_CODE"
 $AZURE_APIM_NAME = "apim-$AZURE_ENV_NAME-$AZURE_ENV_INFRA-$AZURE_LOCATION_CODE"
+$SUBSCRIPTION_NAME = "{{애저 구독 이름}}"
+$SUBSCRIPTION_ID = $(az account list --query "[?name == '$SUBSCRIPTION_NAME'].id" -o tsv)
 $API_VERSION = "2022-08-01"
+$REQUEST_URL = "/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP/providers/Microsoft.ApiManagement/service/$AZURE_APIM_NAME/subscriptions/default/listSecrets?api-version=$API_VERSION"
 
-$SUBSCRIPTION_KEY=$(az rest -m post `
-  --url /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP/providers/Microsoft.ApiManagement/service/$AZURE_APIM_NAME/subscriptions/default/listSecrets?api-version=$API_VERSION `
-  --query "primaryKey" -o tsv
+$SUBSCRIPTION_KEY=$(az rest -m post --url $REQUEST_URL --query "primaryKey" -o tsv)
+
+$SUBSCRIPTION_KEY
 ```
 
 ```bash
-SUBSCRIPTION_NAME="{{애저 구독 이름}}"
-SUBSCRIPTION_ID=$(az account list --query "[?name == '$SUBSCRIPTION_NAME'].id" -o tsv)
+# Bash/Zsh
+az login
+
 AZURE_RESOURCE_GROUP="rg-$AZURE_ENV_NAME-$AZURE_ENV_INFRA-$AZURE_LOCATION_CODE"
 AZURE_APIM_NAME="apim-$AZURE_ENV_NAME-$AZURE_ENV_INFRA-$AZURE_LOCATION_CODE"
+SUBSCRIPTION_NAME="{{애저 구독 이름}}"
+SUBSCRIPTION_ID=$(az account list --query "[?name == '$SUBSCRIPTION_NAME'].id" -o tsv)
 API_VERSION="2022-08-01"
+REQUEST_URL="/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP/providers/Microsoft.ApiManagement/service/$AZURE_APIM_NAME/subscriptions/default/listSecrets?api-version=$API_VERSION"
 
-SUBSCRIPTION_KEY=$(az rest -m post \
-  --url /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$AZURE_RESOURCE_GROUP/providers/Microsoft.ApiManagement/service/$AZURE_APIM_NAME/subscriptions/default/listSecrets?api-version=$API_VERSION \
-  --query "primaryKey" -o tsv
+SUBSCRIPTION_KEY=$(az rest -m post --url $REQUEST_URL --query "primaryKey" -o tsv)
+
+echo $SUBSCRIPTION_KEY
 ```
