@@ -9,8 +9,8 @@ paths:
   /messages:
     post:
       tags:
-        - sms
-      operationId: SMS.Send
+        - mms
+      operationId: MMS.Send
       requestBody:
         description: Message payload to send
         content:
