@@ -58,7 +58,7 @@
     gh workflow run "Azure Deployment" --repo $GITHUB_USERNAME/infrastructure
     ```
 
-    > 위의 `gh workflow run ...` 명령어를 실행시킬 때, 권한 이슈가 나오는 경우 (예: `Resource not accessible by integration`), [퍼스널 액세스 토큰](https://docs.github.com/ko/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)을 사용해 보세요.
+    > 위의 `gh workflow run ...` 명령어를 실행시킬 때 | 권한 이슈가 나오는 경우 (예: `Resource not accessible by integration`) | [퍼스널 액세스 토큰](https://docs.github.com/ko/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)을 사용해 보세요.
 
 ## 파워 플랫폼 커스텀 커넥터
 
@@ -97,3 +97,58 @@ SUBSCRIPTION_KEY=$(az rest -m post --url $REQUEST_URL --query "primaryKey" -o ts
 
 echo $SUBSCRIPTION_KEY
 ```
+
+## Azure OpenAI 프로비저닝
+
+1. 아래 순서대로 명령어를 실행시켜 Azure OpenAI 서비스 인스턴스를 생성합니다.
+
+    ```powershell
+    # On Bash/Zsh
+    AZURE_ENV_NAME="{{애저 리소스 이름}}"
+    pwsh ./infra/New-OpenAIs.ps1 -AzureEnvironmentName $AZURE_ENV_NAME -ModelName {{모델 이름}} -ModelVersion {{모델 버전}}
+
+    # On PowerShell
+    $AZURE_ENV_NAME = "{{애저 리소스 이름}}"
+    ./infra/New-OpenAIs.ps1 -AzureEnvironmentName $AZURE_ENV_NAME -ModelName {{모델 이름}} -ModelVersion {{모델 버전}}
+    ```
+
+   아래는 생성 가능한 모델 목록입니다. **2024년 6월 26일 기준**
+
+   | 모델 이름               | 모델 버전         |
+   |:-----------------------:|:-----------------:|
+   | gpt-4                   | 0613              |
+   | gpt-4                   | 1106-Preview      |
+   | gpt-4                   | 0125-Preview      |
+   | gpt-4                   | vision-preview    |
+   | gpt-4                   | turbo-2024-04-09  |
+   | gpt-4o                  | 2024-05-13        |
+   | gpt-4-32k               | 0613              |
+   | gpt-35-turbo            | 0301              |
+   | gpt-35-turbo            | 0613              |
+   | gpt-35-turbo            | 1106              |
+   | gpt-35-turbo            | 0125              |
+   | gpt-35-turbo-16k*       | 0613*             |
+   | gpt-35-turbo-instruct   | 0914              |
+   | text-embedding-ada-002  | 1                 |
+   | text-embedding-ada-002* | 2*                |
+   | text-embedding-3-small  | 1                 |
+   | text-embedding-3-large  | 1                 |
+   | dall-e-2                | 2.0               |
+   | dall-e-3                | 3.0               |
+   | babbage-002             | 1                 |
+   | davinci-002             | 1                 |
+   | tts                     | 001               |
+   | tts-hd                  | 001               |
+   | whisper                 | 001               |
+
+   > 해커그라운드 운영을 위해서는 `*` 마크한 모델을 사용하세요.
+
+1. 아래 명령어를 실행시켜 설치한 인스턴스 정보를 확인합니다. 아래 명령어는 `infra` 디렉토리에 `instances.json` 파일을 생성합니다.
+
+    ```bash
+    # On Bash/Zsh
+    pwsh ./infra/Get-OpenAIDetails.ps1 -AzureEnvironmentName $AZURE_ENV_NAME
+    
+    # On PowerShell
+    ./infra/Get-OpenAIDetails.ps1 -AzureEnvironmentName $AZURE_ENV_NAME
+    ```
