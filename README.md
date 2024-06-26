@@ -58,7 +58,7 @@
     gh workflow run "Azure Deployment" --repo $GITHUB_USERNAME/infrastructure
     ```
 
-    > 위의 `gh workflow run ...` 명령어를 실행시킬 때 | 권한 이슈가 나오는 경우 (예: `Resource not accessible by integration`) | [퍼스널 액세스 토큰](https://docs.github.com/ko/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)을 사용해 보세요.
+    > 위의 `gh workflow run ...` 명령어를 실행시킬 때, 권한 이슈가 나오는 경우 (예: `Resource not accessible by integration`), [퍼스널 액세스 토큰](https://docs.github.com/ko/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)을 사용해 보세요.
 
 ## 파워 플랫폼 커스텀 커넥터
 
