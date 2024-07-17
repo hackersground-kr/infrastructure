@@ -10,11 +10,15 @@ Param(
 
     [string]
     [Parameter(Mandatory=$false)]
-    $ModelName = "gpt-4-32k",
+    $ModelName = "gpt-4o",
 
     [string]
     [Parameter(Mandatory=$false)]
-    $ModelVersion = "0613",
+    $ModelVersion = "2024-05-13",
+
+    [int]
+    [Parameter(Mandatory=$false)]
+    $Capacity = 80,
 
     [string]
     [Parameter(Mandatory=$false)]
@@ -26,13 +30,14 @@ Param(
 )
 
 function Show-Usage {
-    Write-Output "    This provisions Azure OpenAI Service instances to all available regions and deploy models on repective locations
+    Write-Host "    This provisions Azure OpenAI Service instances to all available regions and deploy models on repective locations
 
     Usage: $(Split-Path $MyInvocation.ScriptName -Leaf) ``
             [-ResourceGroupLocation <Resource group location>] ``
             [-AzureEnvironmentName  <Azure environment name>] ``
             [-ModelName             <Azure OpenAI model name>] ``
             [-ModelVersion          <Azure OpenAI model version>] ``
+            [-Capacity              <Azure OpenAI model capacity>] ``
             [-ApiVersion            <API version>] ``
 
             [-Help]
@@ -40,8 +45,9 @@ function Show-Usage {
     Options:
         -ResourceGroupLocation  Resource group name. Default value is `'koreacentral`'
         -AzureEnvironmentName   Azure eovironment name.
-        -ModelName              Azure OpenAI model name. Default value is `'gpt-4-32k`'
-        -ModelVersion           Azure OpenAI model version. Default value is `'0613`'
+        -ModelName              Azure OpenAI model name. Default value is `'gpt-4o`'
+        -ModelVersion           Azure OpenAI model version. Default value is `'2024-05-13`'
+        -Capacity               Azure OpenAI model capacity. Default value is `'80`'
         -ApiVersion             API version. Default value is `'2023-05-01`'
 
         -Help:                  Show this message.
@@ -79,6 +85,8 @@ if ($resourceGroupExists -eq $false) {
     $rg = az group create -n $resourceGroupName -l $ResourceGroupLocation
 }
 
+Write-Host "Provisioning $ModelName ..." -ForegroundColor Yellow
+
 # Check available locations
 $subscriptionId = az account show --query "id" -o tsv
 $url = "/subscriptions/$subscriptionId/providers/Microsoft.CognitiveServices"
@@ -97,25 +105,34 @@ $locations | ForEach-Object {
 
     $model = $models | Where-Object { $_.name -eq $ModelName -and $_.version -eq $ModelVersion -and $_.skus.Count -gt 0 -and $_.skus[0].name -eq "Standard" }
     if ($model -ne $null) {
+        # Temporary exclusion
+        if ($location -eq "switzerlandnorth") {
+            continue
+        }
+
         # Provision Azure OpenAI Services
         $cogsvc = az cognitiveservices account list -g $ResourceGroupName --query "[?location=='$location']" | ConvertFrom-Json
         if ($cogsvc -eq $null) {
+            $resourceName = "cogsvc-$resourceToken-$location"
+
+            Write-Host "Provisioning $resourceName instance ..." -ForegroundColor Cyan
+
             $cogsvc = az cognitiveservices account create `
                 -g $resourceGroupName `
-                -n "cogsvc-$resourceToken-$location" `
+                -n $resourceName `
                 -l $location `
                 --kind OpenAI `
                 --sku S0 `
                 --assign-identity `
                 --tags azd-env-name=cogsvc-$AzureEnvironmentName | ConvertFrom-Json
 
-            Write-Output "$($cogsvc.name) instance has been provisioned"
+            Write-Host "    $resourceName instance has been provisioned" -ForegroundColor Cyan
         }
 
         $modelNameShortened = $ModelName.Replace("-", "").Replace(".", "")
         $modelVersionShortened = $ModelVersion.Replace("-", "").Replace(".", "")
         $deploymentName = "model-$modelNameShortened-$modelVersionShortened"
-        $capacity = $ModelName -eq "dall-e-3" ? 1 : 8
+        $skuName = ($ModelName -eq "gpt-4o") ? "GlobalStandard" : "Standard"
 
         $deployment = az cognitiveservices account deployment list `
             -g $resourceGroupName `
@@ -124,6 +141,8 @@ $locations | ForEach-Object {
 
         # Deploy model
         if ($deployment -eq $null) {
+            Write-Host "Provisioning $deploymentName on the $($cogsvc.name) instance ..." -ForegroundColor Magenta
+
             $deployment = az cognitiveservices account deployment create `
                 -g $resourceGroupName `
                 -n "cogsvc-$resourceToken-$location" `
@@ -131,10 +150,12 @@ $locations | ForEach-Object {
                 --model-name $ModelName `
                 --model-version $ModelVersion `
                 --deployment-name $deploymentName `
-                --sku-name Standard `
-                --sku-capacity $capacity
+                --sku-name $skuName `
+                --sku-capacity $Capacity
 
-            Write-Output "$deploymentName on the $($cogsvc.name) instance has been deployed"
+            Write-Host "    $deploymentName on the $($cogsvc.name) instance has been deployed" -ForegroundColor Magenta
         }
     }
 }
+
+Write-Host "$ModelName has been provisioned" -ForegroundColor Yellow
